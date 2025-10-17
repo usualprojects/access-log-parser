@@ -17,8 +17,11 @@ public class Main {
             return;
         }
         System.out.println("Путь указан верно.");
-        int countStr=0, shortStr=1000, longStr=0;
-        boolean veryLong=false;
+
+        int countStr=0;
+        int shortStr=Integer.MAX_VALUE;
+        int longStr=0;
+
         try (FileReader fileReader = new FileReader(path))
         {
             BufferedReader reader =
@@ -31,20 +34,20 @@ public class Main {
                 if(length < shortStr) shortStr=length;
                 if(length > longStr) longStr=length;
                 if(length > 1024) {
-                    veryLong=true;
-                    break;
+                    throw new VeryLongStringException("Cтрока длиннее 1024 символов");
+                    // либо создаем экземпляр RuntimeException throw new RuntimeException("Cтрока длиннее 1024 символов");
                 }
             }
+            if (countStr == 0) shortStr = 0;
+            System.out.println("Количество строк в файле " + countStr);
+            System.out.println("Длина самой длинной строки в файле " + longStr);
+            System.out.println("Длина самой короткой строки в файле " + shortStr);
         }
-        catch (Exception e) {
+        catch (VeryLongStringException ex){
+            System.err.println("Ошибка: " + ex.getMessage());
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
-        if(veryLong){
-            throw new VeryLongStringException("Cтрока длиннее 1024 символов");
-            // либо создаем экземпляр RuntimeException throw new RuntimeException("Cтрока длиннее 1024 символов");
-        }
-        System.out.println("Количество строк в файле " + countStr);
-        System.out.println("Длина самой длинной строки в файле " + longStr);
-        System.out.println("Длина самой короткой строки в файле " + shortStr);
     }
 }

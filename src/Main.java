@@ -18,30 +18,38 @@ public class Main {
         }
         System.out.println("Путь указан верно.");
 
-        int countStr=0;
-        int shortStr=Integer.MAX_VALUE;
-        int longStr=0;
+        int countStr = 0;
+        int countYandex = 0;
+        int countGoogle = 0;
 
         try (FileReader fileReader = new FileReader(path))
         {
             BufferedReader reader =
                     new BufferedReader(fileReader);
             String line;
-            while ((line = reader.readLine()) != null)
-            {
+            while ((line = reader.readLine()) != null) {
                 int length = line.length();
                 countStr++;
-                if(length < shortStr) shortStr=length;
-                if(length > longStr) longStr=length;
-                if(length > 1024) {
+                if (length > 1024) {
                     throw new VeryLongStringException("Cтрока длиннее 1024 символов");
                     // либо создаем экземпляр RuntimeException throw new RuntimeException("Cтрока длиннее 1024 символов");
                 }
+                LogString s1 = new LogString(line);
+                String in = s1.getInputFromUserAgent();
+                if (in.equals("YandexBot")) {
+                    countYandex++;
+//                    System.out.println("Add Yandex");
+                } else {
+                    if (in.equals("Googlebot")) {
+                        countGoogle++;
+//                        System.out.println("Add Google");
+                    }
+                }
             }
-            if (countStr == 0) shortStr = 0;
             System.out.println("Количество строк в файле " + countStr);
-            System.out.println("Длина самой длинной строки в файле " + longStr);
-            System.out.println("Длина самой короткой строки в файле " + shortStr);
+//            System.out.println(countYandex + " " + countGoogle);
+            System.out.println("Доля запросов от YandexBot " + (double) countYandex/countStr);
+            System.out.println("Доля запросов от Googlebot " + (double) countGoogle/countStr);
         }
         catch (VeryLongStringException ex){
             System.err.println("Ошибка: " + ex.getMessage());

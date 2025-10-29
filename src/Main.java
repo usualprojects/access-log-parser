@@ -5,6 +5,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Введите путь к файлу");
         String path = new Scanner(System.in).nextLine();
+//        String path = "./src/access.log";
         File file = new File(path);
         boolean fileExists = file.exists();
         boolean isDirectory = file.isDirectory();
@@ -19,8 +20,7 @@ public class Main {
         System.out.println("Путь указан верно.");
 
         int countStr = 0;
-        int countYandex = 0;
-        int countGoogle = 0;
+        Statistics st = new Statistics();
 
         try (FileReader fileReader = new FileReader(path))
         {
@@ -34,22 +34,11 @@ public class Main {
                     throw new VeryLongStringException("Cтрока длиннее 1024 символов");
                     // либо создаем экземпляр RuntimeException throw new RuntimeException("Cтрока длиннее 1024 символов");
                 }
-                LogString s1 = new LogString(line);
-                String in = s1.getInputFromUserAgent();
-                if (in.equals("YandexBot")) {
-                    countYandex++;
-//                    System.out.println("Add Yandex");
-                } else {
-                    if (in.equals("Googlebot")) {
-                        countGoogle++;
-//                        System.out.println("Add Google");
-                    }
-                }
+                LogEntry s1 = new LogEntry(line);
+                st.addEntry(s1);
             }
             System.out.println("Количество строк в файле " + countStr);
-//            System.out.println(countYandex + " " + countGoogle);
-            System.out.println("Доля запросов от YandexBot " + (double) countYandex/countStr);
-            System.out.println("Доля запросов от Googlebot " + (double) countGoogle/countStr);
+            System.out.println("TrafficRate " + (double) st.getTrafficRate());
         }
         catch (VeryLongStringException ex){
             System.err.println("Ошибка: " + ex.getMessage());

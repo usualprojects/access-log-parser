@@ -8,7 +8,7 @@ public class LogEntry {
     final private String twoProperty;
     final private LocalDateTime dateTime;
     final private HttpMethod method;
-    final private String paths;
+    final private String path;
     final private int codeHttp;
     final private int size;
     final private String referer;
@@ -25,7 +25,7 @@ public class LogEntry {
 //        System.out.println("dateTime="+dateTime);
         s = s[1].split("\"", 3);
         this.method = HttpMethod.valueOf(s[1].split(" ",2)[0]);
-        this.paths = s[1].split(" ",2)[1];
+        this.path = s[1].split(" ",3)[1];
         s = s[2].split(" ", 5);
         this.codeHttp = Integer.parseInt(s[1]);
         this.size = Integer.parseInt(s[2]);;
@@ -50,8 +50,8 @@ public class LogEntry {
         return method.toString();
     }
 
-    public String getPaths() {
-        return paths;
+    public String getPath() {
+        return path;
     }
 
     public int getSize() {

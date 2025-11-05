@@ -37,8 +37,8 @@ public class Main {
                 LogEntry s1 = new LogEntry(line);
                 st.addEntry(s1);
             }
-            System.out.println("Количество строк в файле " + countStr);
-            System.out.println("TrafficRate " + (double) st.getTrafficRate());
+            System.out.println("Существующие страницы " + st.getExistPages().toString());
+            System.out.println("Статистика операционных систем " + st.getStatisticOs().toString());
         }
         catch (VeryLongStringException ex){
             System.err.println("Ошибка: " + ex.getMessage());

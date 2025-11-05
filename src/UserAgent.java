@@ -8,7 +8,7 @@ public class UserAgent {
 
     public UserAgent(String userAgent){
         this.userAgent=userAgent;
-        String s="", os="", br="";
+        String s="", os="Other os", br="Other br";
         Pattern pat = Pattern.compile("\\((.*?)\\)");
         Matcher m = pat.matcher(this.userAgent);
 
@@ -33,7 +33,7 @@ public class UserAgent {
         } else if (str.contains("Linux")) {
             return "Linux";
         }
-        return "Other";
+        return "Other os";
     }
 
     public static String getBrowser(String str) {
@@ -48,7 +48,7 @@ public class UserAgent {
         } else if (str.contains("Safari")) {
             return "Safari";
         }
-        return "Other";
+        return "Other br";
     }
 
     public String getUserAgent() {

@@ -5,41 +5,54 @@ import java.util.*;
 public class Statistics {
     private double totalTraffic;
     private LocalDateTime minTime, maxTime;
-    private HashSet<String> pages;
+    private HashSet<String> existPages;
+    private HashSet<String> nonexistPages;
     private HashMap<String, Integer> countOs;
+    private HashMap<String, Integer> countBrowser;
 
     public Statistics(){
         this.totalTraffic = 0;
-        this.maxTime=LocalDateTime.MIN;
-        this.minTime=LocalDateTime.MAX;
-        this.pages = new HashSet<>();
+        this.maxTime=null;
+        this.minTime=null;
+        this.existPages = new HashSet<>();
+        this.nonexistPages = new HashSet<>();
         this.countOs = new HashMap<>();
+        this.countBrowser = new HashMap<>();
     }
 
     public void addEntry(LogEntry log){
-        if(log.getCodeHttp()==200) {
-            pages.add(log.getPath());
-//            System.out.println("path =" +log.getPath());
-        }
-        String os = log.getAgent().getOs();
-        if(this.countOs.containsKey(os)){
-            this.countOs.put(os, this.countOs.get(os)+1);
-        }
-        else {
-            this.countOs.put(os, 1);
-        }
-//        System.out.println("size =" +log.getSize());
+        sortPages(log);
+        counting(log.getAgent().getBrowser(), this.countBrowser);
+        counting(log.getAgent().getOs(), this.countOs);
         this.totalTraffic += log.getSize();
-//        System.out.println("Total " + this.totalTraffic);
-        if(log.getDateTime().isBefore(minTime)) {
+        if(minTime == null || log.getDateTime().isBefore(minTime)) {
             minTime=log.getDateTime();
-//            System.out.println("min");
         }
-        if(log.getDateTime().isAfter(maxTime)){
+        if(maxTime == null || log.getDateTime().isAfter(maxTime)){
             maxTime=log.getDateTime();
-//            System.out.println("max");
         }
     }
+
+    private void counting(String key, HashMap<String, Integer> hashCount){
+        if(hashCount.containsKey(key)){
+            hashCount.put(key, hashCount.get(key)+1);
+        }
+        else {
+            hashCount.put(key, 1);
+        }
+    }
+
+    private void sortPages(LogEntry log) {
+        if(log.getCodeHttp()==200) {
+            existPages.add(log.getPath());
+        }
+        else {
+            if (log.getCodeHttp()==404) {
+                nonexistPages.add(log.getPath());
+            }
+        }
+    }
+
     public double getTrafficRate(){
         Duration duration = Duration.between(this.minTime, this.maxTime);
         long diffInHours = duration.toHours();
@@ -47,22 +60,34 @@ public class Statistics {
     }
 
     public List<String> getExistPages() {
-        return new ArrayList<>(this.pages);
+        return new ArrayList<>(this.existPages);
     }
 
     public HashMap<String, Double> getStatisticOs(){
-        int countAllOs = 0;
+        return getStatistic(this.countOs);
+    }
+
+    public HashMap<String, Double> getStatisticBrowser(){
+        return getStatistic(this.countBrowser);
+    }
+
+    private HashMap<String, Double> getStatistic(HashMap<String, Integer> hashCount){
+        int countAll = 0;
 //        Double check = 0.0;
-        for (Map.Entry<String, Integer> entry: this.countOs.entrySet()) {
-            countAllOs += entry.getValue();
+        for (Map.Entry<String, Integer> entry: hashCount.entrySet()) {
+            countAll += entry.getValue();
         }
-        HashMap<String, Double> StatisticOs = new HashMap<>();
-        for (Map.Entry<String, Integer> entry: this.countOs.entrySet()) {
-            Double part = (double) entry.getValue()/countAllOs;
-            StatisticOs.put(entry.getKey(), part);
+        HashMap<String, Double> Statistic = new HashMap<>();
+        for (Map.Entry<String, Integer> entry: hashCount.entrySet()) {
+            Double part = (double) entry.getValue()/countAll;
+            Statistic.put(entry.getKey(), part);
 //            check += part;
         }
 //        System.out.println("Check " + check);
-        return StatisticOs;
+        return Statistic;
+    }
+
+    public List<String> getNonexistPages() {
+        return new ArrayList<>(this.nonexistPages);
     }
 }

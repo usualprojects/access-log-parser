@@ -38,7 +38,9 @@ public class Main {
                 st.addEntry(s1);
             }
             System.out.println("Существующие страницы " + st.getExistPages().toString());
+            System.out.println("Несуществующие страницы " + st.getNonexistPages().toString());
             System.out.println("Статистика операционных систем " + st.getStatisticOs().toString());
+            System.out.println("Статистика операционных систем " + st.getStatisticBrowser().toString());
         }
         catch (VeryLongStringException ex){
             System.err.println("Ошибка: " + ex.getMessage());
